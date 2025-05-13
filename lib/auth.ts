@@ -8,7 +8,6 @@ function makeJWT(customerId: string, ticketId: string): string {
 }
 
 export function login(email: string, ticketCode: string): { status: boolean, token: string } {
-    // Should return a JWT token that stores customer and ticket IDs; not implemented yet
     const customer = getCustomerByEmail(email);
     const ticket = getTicketByCode(ticketCode);
     if (customer !== null && ticket !== null && customer.ticketIds.includes(ticket.id)) {
