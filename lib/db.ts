@@ -28,7 +28,7 @@ export function getCustomer(id: string): Customer | null {
 }
 
 export function getCustomerByEmail(email: string): Customer | null {
-    const obj = customers.entries().filter(val => val[1].email === email).next().value;
+    const obj = Array.from(customers.entries()).filter(val => val[1].email === email)[0];
     if (obj === undefined) {
         return null;
     }
@@ -36,7 +36,7 @@ export function getCustomerByEmail(email: string): Customer | null {
 }
 
 export function getCustomerByTicketId(ticketId: string): Customer | null {
-    const obj = customers.entries().filter(val => val[1].ticketIds.includes(ticketId)).next().value;
+    const obj = Array.from(customers.entries()).filter(val => val[1].ticketIds.includes(ticketId))[0];
     if (obj === undefined) {
         return null;
     }
@@ -52,7 +52,7 @@ export function getTicket(id: string): Ticket | null {
 }
 
 export function getTicketByCode(code: string): Ticket | null {
-    const obj = tickets.entries().filter(val => val[1].code === code).next().value;
+    const obj = Array.from(tickets.entries()).filter(val => val[1].code === code)[0];
     if (obj === undefined) {
         return null;
     }
@@ -60,7 +60,6 @@ export function getTicketByCode(code: string): Ticket | null {
 }
 
 export function getSeats(): Map<string, Seat> {
-    return new Map(seats.entries()
-        .map(([id, [isAvailable, reservedBy]], _) => [id, { id, isAvailable, reservedBy }] as [string, Seat])
-        .toArray());
+    return new Map(Array.from(seats.entries())
+        .map(([id, [isAvailable, reservedBy]], _) => [id, { id, isAvailable, reservedBy }] as [string, Seat]));
 }
