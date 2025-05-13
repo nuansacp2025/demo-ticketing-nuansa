@@ -35,6 +35,14 @@ export function getCustomerByEmail(email: string): Customer | null {
     return { id: obj[0], ...obj[1] };
 }
 
+export function getCustomerByTicketId(ticketId: string): Customer | null {
+    const obj = customers.entries().filter(val => val[1].ticketIds.includes(ticketId)).next().value;
+    if (obj === undefined) {
+        return null;
+    }
+    return { id: obj[0], ...obj[1] };
+}
+
 export function getTicket(id: string): Ticket | null {
     const obj = tickets.get(id);
     if (obj === undefined) {
