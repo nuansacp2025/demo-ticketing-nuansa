@@ -1,18 +1,28 @@
-import { getTicketDetails, getTicketId, type TicketDetails } from './db';
+import { getCustomerByEmail, getTicketByCode } from './db';
+import jwt from 'jsonwebtoken';
 
-export function login(email: string, ticketId: string): { status: boolean, address: string } {
-    const details = getTicketDetails(ticketId);
-    if (details !== undefined && details.email == email) {
-        document.cookie = `ticketId=${ticketId};`;
-        return { status: true, address: details.address };
-    }
-    return { status: false, address: "" };
+const SECRET_KEY = "your-secret-key"; // Replace with a secure key
+
+function makeJWT(customerId: string, ticketId: string): string {
+    return jwt.sign({ customerId, ticketId }, SECRET_KEY, { expiresIn: '1h' });
 }
 
-export function verify(ticketId: string): boolean {
-    const verifier = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('ticketId='))
-      ?.split('=')[1];
-      return ticketId == verifier;
+export function login(email: string, ticketCode: string): { status: boolean, token: string } {
+    // Should return a JWT token that stores customer and ticket IDs; not implemented yet
+    const customer = getCustomerByEmail(email);
+    const ticket = getTicketByCode(ticketCode);
+    if (customer !== null && ticket !== null && customer.ticketIds.includes(ticket.id)) {
+        const token = makeJWT(customer.id, ticket.id);
+        return { status: true, token };
+    }
+    return { status: false, token: "" };
+}
+
+export function verify(token: string): { customerId: string, ticketId: string } {
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY) as { customerId: string, ticketId: string };
+        return { customerId: decoded.customerId, ticketId: decoded.ticketId };
+    } catch (error) {
+        throw new Error("Invalid token");
+    }
 }
